@@ -5,14 +5,12 @@ require 'optparse'
 def main
   option = ARGV.getopts('a', 'r')
 
-  files_and_dirs_name = []
-  if option['a']
-    files_and_dirs_name = Dir.entries('.').sort
-  elsif option['r']
-    tmp = Dir.glob('*')
+  files_and_dirs_name = Dir.glob('*') unless option['a'] || option['r']
+  files_and_dirs_name = Dir.entries('.').sort if option['a']
+  if option['r']
+    tmp = files_and_dirs_name.nil? ? Dir.glob('*') : files_and_dirs_name
+    files_and_dirs_name = []
     files_and_dirs_name << tmp.pop while tmp.size.positive?
-  else
-    files_and_dirs_name = Dir.glob('*')
   end
 
   formatted_list = push_elem_to_three_lists(files_and_dirs_name)
