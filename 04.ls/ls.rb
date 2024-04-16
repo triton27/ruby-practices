@@ -1,46 +1,28 @@
 #!/usr/bin/env ruby
-
 require 'optparse'
+require_relative './ar_option_methods'
+require_relative './l_option_methods'
 
 def main
-  option = ARGV.getopts('a', 'r')
+  option = ARGV.getopts('a', 'r', 'l')
 
-  files_and_dirs_name = Dir.glob('*') unless option['a'] || option['r']
-  files_and_dirs_name = Dir.entries('.').sort if option['a']
+  file_and_directory_names = get_file_and_directory_names(option)
+
+  ArOptionMethods.output(file_and_directory_names) unless option['l']
+  LOptionMethods.output(file_and_directory_names) if option['l']
+end
+
+def get_file_and_directory_names(option)
+  file_and_directory_names = Dir.glob('*') unless option['a'] || option['r'] || option['l']
+  file_and_directory_names = Dir.entries('.').sort if option['a']
+
   if option['r']
-    tmp = files_and_dirs_name.nil? ? Dir.glob('*') : files_and_dirs_name
-    files_and_dirs_name = []
-    files_and_dirs_name << tmp.pop while tmp.size.positive?
+    tmp = file_and_directory_names.nil? ? Dir.glob('*') : file_and_directory_names
+    file_and_directory_names = []
+    file_and_directory_names << tmp.pop while tmp.size.positive?
   end
 
-  formatted_list = push_elem_to_three_lists(files_and_dirs_name)
-  output_list = def_nil_to_list(formatted_list)
-
-  puts(output_list.transpose.map { |row| row.join(' ') })
-end
-
-def adjust_with_margin(list)
-  max_chars = list.map(&:size).max
-  list.map { |item| item.ljust(max_chars) }
-end
-
-# ターミナルの幅に関わらず横に最大３列を維持するため
-# ３つの配列に要素を詰める
-MAXIMAM_COLUMNS = 3
-def push_elem_to_three_lists(files_and_dirs_name)
-  tmp = []
-  files_and_dirs_name.each_slice(files_and_dirs_name.size / MAXIMAM_COLUMNS + 1) do |list|
-    tmp << adjust_with_margin(list)
-  end
-  tmp
-end
-
-def def_nil_to_list(formatted_list)
-  # 各配列の要素数を揃えるために、要素数が足りないリストにnilを入れる
-  max_elem = formatted_list.max_by(&:size).size
-  formatted_list.each do |elem|
-    elem << nil while elem.size < max_elem
-  end
+  file_and_directory_names
 end
 
 main
