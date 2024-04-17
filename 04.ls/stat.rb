@@ -95,7 +95,7 @@ def get_mtime(file_stat)
     "#{file_mmon.rjust(2)} #{file_mday.rjust(2)}"
 
   file_mtime += if Date.today.year > file_stat.mtime.year
-                  " #{file_myear}"
+                  " #{file_myear.rjust(5)}"
                 else
                   " #{file_mhour}:#{file_mmin}"
                 end
