@@ -13,7 +13,7 @@ def main
 end
 
 def get_file_and_directory_names(option)
-  file_and_directory_names = Dir.glob('*') unless option['a'] || option['r'] || option['l']
+  file_and_directory_names = Dir.glob('*') unless option['a'] || option['r']
   file_and_directory_names = Dir.entries('.').sort if option['a']
 
   if option['r']

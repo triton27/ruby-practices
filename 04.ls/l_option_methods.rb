@@ -6,7 +6,6 @@ SPACE = ' '.freeze
 
 module LOptionMethods
   def output(file_and_directory_names)
-    file_and_directory_names = file_and_directory_names.nil? ? Dir.glob('*') : file_and_directory_names
     files_stat = file_and_directory_names.map { |name| File::Stat.new(name) }
 
     stat_obj = Stat.new
