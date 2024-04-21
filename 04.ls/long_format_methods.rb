@@ -4,7 +4,7 @@ require_relative './stat'
 
 SPACE = ' '.freeze
 
-module LOptionMethods
+module LongFormatMethods
   def output(file_and_directory_names)
     files_stat = file_and_directory_names.map { |name| File::Stat.new(name) }
 

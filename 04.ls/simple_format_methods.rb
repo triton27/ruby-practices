@@ -1,5 +1,5 @@
 MAXIMAM_COLUMNS = 3
-module ArOptionMethods
+module SimpleFormatMethods
   def output(file_and_directory_names)
     formatted_list = push_elem_to_three_lists(file_and_directory_names)
     output_list = nil_into_list(formatted_list)

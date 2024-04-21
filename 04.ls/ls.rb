@@ -1,15 +1,18 @@
 #!/usr/bin/env ruby
 require 'optparse'
-require_relative './ar_option_methods'
-require_relative './l_option_methods'
+require_relative './simple_format_methods'
+require_relative './long_format_methods'
 
 def main
   option = ARGV.getopts('a', 'r', 'l')
 
   file_and_directory_names = get_file_and_directory_names(option)
 
-  ArOptionMethods.output(file_and_directory_names) unless option['l']
-  LOptionMethods.output(file_and_directory_names) if option['l']
+  if option['l']
+    LongFormatMethods.output(file_and_directory_names)
+  else
+    SimpleFormatMethods.output(file_and_directory_names)
+  end
 end
 
 def get_file_and_directory_names(option)
