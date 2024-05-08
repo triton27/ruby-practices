@@ -1,17 +1,19 @@
+# 横に最大3列を維持して表示する
 MAXIMAM_COLUMNS = 3
+
 module SimpleFormatMethods
   def output(file_and_directory_names)
-    formatted_list = push_elem_to_three_lists(file_and_directory_names)
-    output_list = pad_with_nil(formatted_list)
-    puts(output_list.transpose.map { |row| row.join(' ') })
+    formatted_strings = push_elem_to_three_strings(file_and_directory_names)
+    output_strings = pad_with_nil(formatted_strings)
+    puts(output_strings.transpose.map { |row| row.join(' ') })
   end
 
   # ターミナルの幅に関わらず横に最大３列を維持するため
   # ３つの配列に要素を詰める
-  def push_elem_to_three_lists(file_and_directory_names)
+  def push_elem_to_three_strings(file_and_directory_names)
     tmp = []
-    file_and_directory_names.each_slice(file_and_directory_names.size / MAXIMAM_COLUMNS + 1) do |list|
-      tmp << justify_left(list)
+    file_and_directory_names.each_slice(file_and_directory_names.size / MAXIMAM_COLUMNS + 1) do |strings|
+      tmp << justify_left(strings)
     end
     tmp
   end
@@ -48,6 +50,6 @@ module SimpleFormatMethods
     strings.map { |string| string + [nil] * (max_length - string.size) }
   end
 
-  module_function :output, :justify_left, :push_elem_to_three_lists,
+  module_function :output, :justify_left, :push_elem_to_three_strings,
                   :pad_with_nil, :calculate_widths, :calculate_width, :zenkaku?
 end
