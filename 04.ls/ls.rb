@@ -1,4 +1,6 @@
 #!/usr/bin/env ruby
+# frozen_string_literal: true
+
 require 'optparse'
 require_relative './custom_sort'
 require_relative './simple_format_methods'

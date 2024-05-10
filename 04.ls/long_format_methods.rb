@@ -1,8 +1,10 @@
+# frozen_string_literal: true
+
 require 'date'
 require 'etc'
 require_relative './stat'
 
-SPACE = ' '.freeze
+SPACE = ' '
 
 module LongFormatMethods
   def output(file_and_directory_names)

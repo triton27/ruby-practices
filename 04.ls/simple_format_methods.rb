@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # 横に最大3列を維持して表示する
 MAXIMAM_COLUMNS = 3
 

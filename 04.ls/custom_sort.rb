@@ -1,4 +1,15 @@
+# frozen_string_literal: true
+
 module CustomSort
+  CHAR_CODEPOINTS_RANGE = [
+    '0'.codepoints.first..'9'.codepoints.first, # 半角数字の範囲
+    'A'.codepoints.first..'Z'.codepoints.first, # 大文字の半角英字の範囲
+    'a'.codepoints.first..'z'.codepoints.first, # 小文字の半角英字の範囲
+    '一'.codepoints.first..'鿿'.codepoints.first, # 漢字の範囲
+    'あ'.codepoints.first..'ん'.codepoints.first, # ひらがなの範囲
+    'ア'.codepoints.first..'ン'.codepoints.first  # カタカナの範囲
+  ].freeze
+
   def custom_sort(string_a, string_b)
     # 文字列をUnicodeポイントの配列に変換
     a_code_points = string_a.codepoints
@@ -6,32 +17,14 @@ module CustomSort
 
     # 各文字のUnicodeポイントに基づいて比較
     a_code_points.zip(b_code_points).each do |a_cp, b_cp|
-      # 半角数字の範囲
-      return -1 if (48..57).cover?(a_cp) && !(48..57).cover?(b_cp)
-      return 1 if !(48..57).cover?(a_cp) && (48..57).cover?(b_cp)
-
-      # 大文字の半角英字の範囲
-      return -1 if (65..90).cover?(a_cp) && !(65..90).cover?(b_cp)
-      return 1 if !(65..90).cover?(a_cp) && (65..90).cover?(b_cp)
-
-      # 小文字の半角英字の範囲
-      return -1 if (97..122).cover?(a_cp) && !(97..122).cover?(b_cp)
-      return 1 if !(97..122).cover?(a_cp) && (97..122).cover?(b_cp)
-
-      # 漢字の範囲
-      return -1 if (19_968..40_959).cover?(a_cp) && !(19_968..40_959).cover?(b_cp)
-      return 1 if !(19_968..40_959).cover?(a_cp) && (19_968..40_959).cover?(b_cp)
-
-      # ひらがなの範囲
-      return -1 if (12_352..12_447).cover?(a_cp) && !(12_352..12_447).cover?(b_cp)
-      return 1 if !(12_352..12_447).cover?(a_cp) && (12_352..12_447).cover?(b_cp)
-
-      # カタカナの範囲
-      return -1 if (12_448..12_543).cover?(a_cp) && !(12_448..12_543).cover?(b_cp)
-      return 1 if !(12_448..12_543).cover?(a_cp) && (12_448..12_543).cover?(b_cp)
-
       # 同じ文字の場合、次の文字へ
       next if a_cp == b_cp
+
+      CHAR_CODEPOINTS_RANGE.each do |range|
+        result = test(range, a_cp, b_cp)
+        # puts range, a_cp, b_cp, result
+        return result unless result.zero?
+      end
 
       return a_cp <=> b_cp # 上記の条件に当てはまらない場合はUnicodeポイントで比較
     end
@@ -40,5 +33,12 @@ module CustomSort
     string_a.length <=> string_b.length
   end
 
-  module_function :custom_sort
+  def test(range, a_cp, b_cp)
+    return -1 if range.cover?(a_cp) && !range.cover?(b_cp)
+    return 1 if !range.cover?(a_cp) && range.cover?(b_cp)
+
+    0
+  end
+
+  module_function :custom_sort, :test
 end
