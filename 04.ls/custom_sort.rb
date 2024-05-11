@@ -1,13 +1,13 @@
-# frozen_string_literal: true
-
 module CustomSort
   CHAR_CODEPOINTS_RANGE = [
+    0..0, # nilの範囲
+    ' '.codepoints.first..'/'.codepoints.first, # 一般的な記号の範囲
     '0'.codepoints.first..'9'.codepoints.first, # 半角数字の範囲
     'A'.codepoints.first..'Z'.codepoints.first, # 大文字の半角英字の範囲
     'a'.codepoints.first..'z'.codepoints.first, # 小文字の半角英字の範囲
     '一'.codepoints.first..'鿿'.codepoints.first, # 漢字の範囲
-    'あ'.codepoints.first..'ん'.codepoints.first, # ひらがなの範囲
-    'ア'.codepoints.first..'ン'.codepoints.first  # カタカナの範囲
+    'ぁ'.codepoints.first..'ん'.codepoints.first, # ひらがなの範囲
+    'ァ'.codepoints.first..'ン'.codepoints.first  # カタカナの範囲
   ].freeze
 
   def custom_sort(string_a, string_b)
@@ -20,9 +20,11 @@ module CustomSort
       # 同じ文字の場合、次の文字へ
       next if a_cp == b_cp
 
+      a_cp = 0 if a_cp.nil?
+      b_cp = 0 if b_cp.nil?
+
       CHAR_CODEPOINTS_RANGE.each do |range|
-        result = test(range, a_cp, b_cp)
-        # puts range, a_cp, b_cp, result
+        result = compare_points_in_range(range, a_cp, b_cp)
         return result unless result.zero?
       end
 
@@ -33,12 +35,12 @@ module CustomSort
     string_a.length <=> string_b.length
   end
 
-  def test(range, a_cp, b_cp)
+  def compare_points_in_range(range, a_cp, b_cp)
     return -1 if range.cover?(a_cp) && !range.cover?(b_cp)
     return 1 if !range.cover?(a_cp) && range.cover?(b_cp)
 
     0
   end
 
-  module_function :custom_sort, :test
+  module_function :custom_sort, :compare_points_in_range
 end
