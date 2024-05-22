@@ -1,31 +1,35 @@
 #!/usr/bin/env ruby
+
 require 'optparse'
+require_relative './custom_sort'
 require_relative './simple_format_methods'
 require_relative './long_format_methods'
 
 def main
   option = ARGV.getopts('a', 'r', 'l')
 
-  file_and_directory_names = get_file_and_directory_names(option)
+  entries = get_entries(option, ARGV)
 
   if option['l']
-    LongFormatMethods.output(file_and_directory_names)
+    LongFormatMethods.output(entries)
   else
-    SimpleFormatMethods.output(file_and_directory_names)
+    SimpleFormatMethods.output(entries)
   end
 end
 
-def get_file_and_directory_names(option)
-  file_and_directory_names = Dir.glob('*') unless option['a'] || option['r']
-  file_and_directory_names = Dir.entries('.').sort if option['a']
-
-  if option['r']
-    tmp = file_and_directory_names.nil? ? Dir.glob('*') : file_and_directory_names
-    file_and_directory_names = []
-    file_and_directory_names << tmp.pop while tmp.size.positive?
+def get_entries(option, argv)
+  if argv.empty?
+    entries = if option['a']
+                Dir.entries('.').sort { |a, b| CustomSort.custom_sort(a, b) }
+              else
+                entries = Dir.glob('*').sort { |a, b| CustomSort.custom_sort(a, b) }
+              end
+    entries.reverse! if option['r']
+  else
+    entries = argv
   end
 
-  file_and_directory_names
+  entries
 end
 
 main
