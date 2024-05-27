@@ -90,8 +90,8 @@ end
 
 def custom_padding(options)
   padding_lines = 8
-  padding_words = 7
-  padding_bytes = 7
+  padding_words = 8
+  padding_bytes = 8
 
   unless options.empty? || options.values.none?
     padding_lines = options[:has_lines_option] ? padding_lines : 0
@@ -104,7 +104,7 @@ end
 
 def print_files(rows, words, bytes, file, options)
   padding_lines, padding_words, padding_bytes = custom_padding(options)
-  puts "#{rows.to_s.rjust(padding_lines)} #{words.to_s.rjust(padding_words)} #{bytes.to_s.rjust(padding_bytes)} #{file}"
+  puts "#{rows.to_s.rjust(padding_lines)}#{words.to_s.rjust(padding_words)}#{bytes.to_s.rjust(padding_bytes)} #{file}"
 end
 
 def print_totals(total_rows, total_words, total_bytes, options, should_output_total)
@@ -115,7 +115,7 @@ def print_totals(total_rows, total_words, total_bytes, options, should_output_to
   padding_lines, padding_words, padding_bytes = custom_padding(options)
   total = should_output_total ? 'total' : ''
 
-  puts "#{total_rows.to_s.rjust(padding_lines)} #{total_words.to_s.rjust(padding_words)} #{total_bytes.to_s.rjust(padding_bytes)} #{total}"
+  puts "#{total_rows.to_s.rjust(padding_lines)}#{total_words.to_s.rjust(padding_words)}#{total_bytes.to_s.rjust(padding_bytes)} #{total}"
 end
 
 main if __FILE__ == $PROGRAM_NAME
