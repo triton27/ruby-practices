@@ -3,13 +3,14 @@
 require 'optparse'
 
 def main
+  options, files = parse_entries
+
   if $stdin.tty?
-    options, files = parse_entries
-    total_rows, total_words, total_bytes = calculate_from_files(files, options)
+    total_rows, total_words, total_bytes = calculate_from_source(files, options, true)
     print_totals(total_rows, total_words, total_bytes, options, true) if files.length > 1
   else
-    total_rows, total_words, total_bytes = calculate_from_stdin
-    print_totals(total_rows, total_words, total_bytes, [], false)
+    total_rows, total_words, total_bytes = calculate_from_source($stdin.to_a, options, false)
+    print_totals(total_rows, total_words, total_bytes, options, false)
   end
 end
 
@@ -28,38 +29,19 @@ def inspect_options(options)
   { has_lines_option:, has_words_option:, has_bytes_option: }
 end
 
-def calculate_from_files(files, options)
+def calculate_from_source(inputs, options, is_file)
   total_rows = 0
   total_words = 0
   total_bytes = 0
 
-  files.each do |file|
-    file_content = read_file_content(file)
-    rows, words, bytes = calculate_metrics(file_content, options)
-    total_rows, total_words, total_bytes = update_totals(rows, words, bytes, total_rows, total_words, total_bytes)
-    print_files(rows, words, bytes, file, options)
-  end
-
-  [total_rows, total_words, total_bytes]
-end
-
-def read_file_content(file)
-  File.read(file)
-rescue Errno::ENOENT
-  puts "Error: File '#{file}' not found."
-rescue Errno::EACCES
-  puts "Error: Permission denied for file '#{file}'."
-rescue StandardError => e
-  puts "Error: #{e.message}"
-end
-
-def calculate_from_stdin
-  total_rows = 0
-  total_words = 0
-  total_bytes = 0
-
-  $stdin.to_a.each do |input|
-    rows, words, bytes = calculate_metrics(input, [])
+  inputs.each do |input|
+    if is_file
+      file_content = File.read(input)
+      rows, words, bytes = calculate_metrics(file_content, options)
+      print_files(rows, words, bytes, input, options)
+    else
+      rows, words, bytes = calculate_metrics(input, options)
+    end
     total_rows, total_words, total_bytes = update_totals(rows, words, bytes, total_rows, total_words, total_bytes)
   end
 
@@ -89,17 +71,19 @@ def update_totals(rows, words, bytes, total_rows, total_words, total_bytes)
 end
 
 def custom_padding(options)
-  padding_lines = 8
-  padding_words = 8
-  padding_bytes = 8
+  default_padding_lines = 8
+  default_padding_words = 8
+  default_padding_bytes = 8
 
-  unless options.empty? || options.values.none?
-    padding_lines = options[:has_lines_option] ? padding_lines : 0
-    padding_words = options[:has_words_option] ? padding_words : 0
-    padding_bytes = options[:has_bytes_option] ? padding_bytes : 0
+  if options.empty? || options.values.none?
+    [default_padding_lines, default_padding_words, default_padding_bytes]
+  else
+    padding_lines = options[:has_lines_option] ? default_padding_lines : 0
+    padding_words = options[:has_words_option] ? default_padding_words : 0
+    padding_bytes = options[:has_bytes_option] ? default_padding_bytes : 0
+
+    [padding_lines, padding_words, padding_bytes]
   end
-
-  [padding_lines, padding_words, padding_bytes]
 end
 
 def print_files(rows, words, bytes, file, options)
